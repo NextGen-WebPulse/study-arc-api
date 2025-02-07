@@ -10,14 +10,20 @@ import { z } from 'zod';
 
 // User schema
 const UserCreateValidationSchema = z.object({
-  name: z.string().min(3, 'Name should be at least 3 characters long'),
-  email: z.string().email('Invalid email format'),
-  phone: z.string().min(10, 'Phone number should be at least 10 characters'),
-  userName: z.string().min(3, 'Username should be at least 3 characters long'),
-  gender: z.enum(['Male', 'Female'], {
-    required_error: "Gender must be 'Male' or 'Female'",
+  body: z.object({
+    name: z.string().min(3, 'Name should be at least 3 characters long'),
+    email: z.string().email('Invalid email format'),
+    phone: z.string().min(10, 'Phone number should be at least 10 characters'),
+    userName: z
+      .string()
+      .min(3, 'Username should be at least 3 characters long'),
+    gender: z.enum(['Male', 'Female'], {
+      required_error: "Gender must be 'Male' or 'Female'",
+    }),
+    password: z
+      .string()
+      .min(6, 'Password should be at least 6 characters long'),
   }),
-  password: z.string().min(6, 'Password should be at least 6 characters long'),
 });
 
 export const UserValidationSchemas = {

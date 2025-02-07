@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 import { model, Schema } from 'mongoose';
-import { IUser, IUserAddress } from './user.interface';
-
+import { IUser, IUserAddress, UserModel } from './user.interface';
+import bcrypt from 'bcrypt';
+import config from '../../config';
 const userAddressSubSchema = new Schema<IUserAddress>({
   country: {
     type: String,
@@ -20,7 +22,7 @@ const userAddressSubSchema = new Schema<IUserAddress>({
   },
 });
 
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema<IUser, UserModel>(
   {
     name: {
       type: String,
@@ -74,4 +76,21 @@ const userSchema = new Schema<IUser>(
   },
 );
 
-export const User = model<IUser>('User', userSchema);
+userSchema.pre('save', async function (next) {
+  const userInfo = this;
+  userInfo.password = await bcrypt.hash(
+    userInfo.password,
+    Number(config.BCRYPT_SOLT_ROUND),
+  );
+  next();
+});
+
+// Static for User Password Check
+userSchema.statics.isCheckPassword = async function (
+  myPlaintextPassword: string,
+  hashPass: string,
+) {
+  return await bcrypt.compare(myPlaintextPassword, hashPass);
+};
+
+export const User = model<IUser, UserModel>('User', userSchema);

@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+import { Model } from 'mongoose';
+
 export interface IUserAddress {
   country: string;
   state: string;
@@ -17,4 +20,11 @@ export interface IUser {
   address: IUserAddress;
   accountStatus: 'block' | 'active';
   isDeleted: boolean;
+}
+
+export interface UserModel extends Model<IUser> {
+  isCheckPassword(
+    myPlaintextPassword: string,
+    hashPass: string,
+  ): Promise<boolean>;
 }
